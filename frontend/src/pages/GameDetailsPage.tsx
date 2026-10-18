@@ -1,5 +1,10 @@
-import { Link, useParams } from 'react-router'
-import { games } from '../data/games'
+import { Link, useNavigate, useParams } from 'react-router'
+import type { Game } from '../types/game'
+
+type GameDetailsPageProps = {
+  games: Game[]
+  onDelete: (id: string) => void
+}
 
 const statusLabels: Record<string, string> = {
   planned: 'В планах',
@@ -7,8 +12,9 @@ const statusLabels: Record<string, string> = {
   completed: 'Пройдено',
 }
 
-export function GameDetailsPage() {
+export function GameDetailsPage({ games, onDelete }: GameDetailsPageProps) {
   const { id } = useParams()
+  const navigate = useNavigate()
   const game = games.find((item) => item.id === id)
 
   if (!game) {
@@ -25,7 +31,7 @@ export function GameDetailsPage() {
     <section className="details-block">
       <h1>{game.title}</h1>
       <p className="details-desc">{game.description}</p>
-      
+
       <div className="details-info">
         <p><strong>Жанр:</strong> {game.genre}</p>
         <p><strong>Платформа:</strong> {game.platform}</p>
@@ -34,7 +40,22 @@ export function GameDetailsPage() {
       </div>
 
       <div className="details-actions">
-        <Link to="/games">← Назад к списку</Link>
+        <Link to={`/games/${game.id}/edit`} className="button-link">
+          Редактировать
+        </Link>
+        <button
+          type="button"
+          className="button-danger"
+          onClick={() => {
+            if (window.confirm(`Удалить игру «${game.title}»?`)) {
+              onDelete(game.id)
+              navigate('/games', { replace: true })
+            }
+          }}
+        >
+          Удалить
+        </button>
+        <Link to="/games" className="back-link">← Назад к списку</Link>
       </div>
     </section>
   )

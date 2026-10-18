@@ -9,3 +9,5 @@ export type Game = {
   status: GameStatus
   rating: number
 }
+
+export type GameDraft = Omit<Game, 'id'>
