@@ -52,6 +52,7 @@ nav a.active {
   padding: 8px 14px;
   border-radius: 6px;
   font-size: 0.9rem;
+  cursor: pointer;
 }
 
 .game-list {
@@ -224,4 +225,53 @@ nav a.active {
   margin-left: auto;
   color: #64748b;
   text-decoration: none;
+}
+
+.status-message {
+  font-size: 0.9rem;
+  color: #2563eb;
+  margin: 4px 0 8px 0;
+}
+
+.network-error-box {
+  background: #fef2f2;
+  border: 1px solid #f87171;
+  padding: 10px;
+  border-radius: 6px;
+  margin: 6px 0;
+}
+
+.network-error-box p {
+  color: #b91c1c;
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+}
+
+.network-empty-box {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  padding: 10px;
+  border-radius: 6px;
+  margin: 6px 0;
+}
+
+.network-empty-box p {
+  color: #475569;
+  margin: 0 0 8px 0;
+  font-size: 0.9rem;
+}
+
+.button-retry {
+  background: #2563eb;
+  color: #ffffff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.button-link:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
 }

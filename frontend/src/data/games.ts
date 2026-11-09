@@ -23,7 +23,7 @@ export const games: Game[] = [
     id: 'g3',
     title: 'Red Dead Redemption 2',
     description: 'История Артура Моргана и банды Ван дер Линде на Диком Западе.',
-    platform: 'PlayStation',
+    platform: 'PS5',
     genre: 'Action-adventure',
     status: 'playing',
     rating: 10,

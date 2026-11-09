@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
+import { usePlatforms } from '../hooks/usePlatforms'
 import type { GameDraft, GameStatus } from '../types/game'
 
 type GameFormProps = {
@@ -12,8 +13,18 @@ export function GameForm(props: GameFormProps) {
   const [draft, setDraft] = useState(() => ({ ...props.initialValues }))
   const [error, setError] = useState('')
 
+  const { load, retry } = usePlatforms()
+  const platforms = load.status === 'success' ? load.data : []
+  const selectedPlatformExists = platforms.some((p) => p.id === draft.platform)
+  const canSave = load.status === 'success' && selectedPlatformExists
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
+
+    if (!canSave) {
+      setError('Дождитесь загрузки справочника и выберите доступную платформу.')
+      return
+    }
 
     const title = draft.title.trim()
     if (title.length < 3 || title.length > 100) {
@@ -64,22 +75,48 @@ export function GameForm(props: GameFormProps) {
         onChange={(e) => setDraft({ ...draft, genre: e.target.value })}
       />
 
-      <label htmlFor="game-platform">Платформа</label>
+      <label htmlFor="game-platform">Платформа *</label>
       <select
         id="game-platform"
         value={draft.platform}
-        onChange={(e) =>
-          setDraft({
-            ...draft,
-            platform: e.target.value as GameDraft['platform'],
-          })
-        }
+        required
+        disabled={load.status !== 'success' || platforms.length === 0}
+        onChange={(e) => setDraft({ ...draft, platform: e.target.value })}
       >
-        <option value="PC">PC</option>
-        <option value="PlayStation">PlayStation</option>
-        <option value="Xbox">Xbox</option>
-        <option value="Switch">Switch</option>
+        <option value="">Выберите платформу</option>
+        {draft.platform !== '' && !selectedPlatformExists && (
+          <option value={draft.platform} disabled>
+            Текущий код: {draft.platform} (выберите доступную)
+          </option>
+        )}
+        {platforms.map((platform) => (
+          <option key={platform.id} value={platform.id}>
+            {platform.name}
+          </option>
+        ))}
       </select>
+
+      {load.status === 'loading' && (
+        <p className="status-message" role="status">Загружаем платформы по сети...</p>
+      )}
+
+      {load.status === 'error' && (
+        <div className="network-error-box">
+          <p role="alert">{load.message}</p>
+          <button type="button" className="button-retry" onClick={retry}>
+            Повторить попытку
+          </button>
+        </div>
+      )}
+
+      {load.status === 'success' && platforms.length === 0 && (
+        <div className="network-empty-box">
+          <p role="status">Список платформ пуст. Сохранение недоступно.</p>
+          <button type="button" className="button-retry" onClick={retry}>
+            Повторить попытку
+          </button>
+        </div>
+      )}
 
       <label htmlFor="game-status">Статус прохождения</label>
       <select
@@ -117,7 +154,9 @@ export function GameForm(props: GameFormProps) {
       />
 
       <div className="form-buttons">
-        <button type="submit" className="button-link">Сохранить</button>
+        <button type="submit" className="button-link" disabled={!canSave}>
+          Сохранить
+        </button>
         <button type="button" className="button-cancel" onClick={props.onCancel}>
           Отмена
         </button>

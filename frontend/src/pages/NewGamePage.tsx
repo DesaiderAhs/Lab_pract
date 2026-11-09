@@ -9,7 +9,7 @@ type NewGamePageProps = {
 const emptyGame: GameDraft = {
   title: '',
   description: '',
-  platform: 'PC',
+  platform: '',
   genre: '',
   status: 'planned',
   rating: 8,

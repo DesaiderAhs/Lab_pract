@@ -4,7 +4,7 @@ export type Game = {
   id: string
   title: string
   description: string
-  platform: 'PC' | 'PlayStation' | 'Xbox' | 'Switch'
+  platform: string
   genre: string
   status: GameStatus
   rating: number
