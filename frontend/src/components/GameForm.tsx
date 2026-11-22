@@ -96,6 +96,19 @@ export function GameForm(props: GameFormProps) {
         ))}
       </select>
 
+      {load.status === 'success' && (
+        <div>
+          <button
+            type="button"
+            className="button-reset"
+            onClick={retry}
+            disabled={load.status !== 'success'}
+          >
+            Обновить справочник
+          </button>
+        </div>
+      )}
+
       {load.status === 'loading' && (
         <p className="status-message" role="status">Загружаем платформы по сети...</p>
       )}

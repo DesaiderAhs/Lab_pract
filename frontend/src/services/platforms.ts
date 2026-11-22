@@ -1,3 +1,4 @@
+import { supabase } from '../lib/supabase'
 import type { Platform } from '../types/platform'
 
 function isPlatform(value: unknown): value is Platform {
@@ -27,18 +28,20 @@ export function parsePlatforms(value: unknown): Platform[] {
   return platforms
 }
 
-const platformsUrl = `${import.meta.env.BASE_URL}demo/platforms.json`
-
 export async function getPlatforms(signal: AbortSignal): Promise<Platform[]> {
-  const response = await fetch(platformsUrl, {
-    signal,
-    cache: 'no-store',
-  })
+  const { data, error } = await supabase
+    .from('platforms')
+    .select('id, name')
+    .order('name')
+    .abortSignal(signal)
 
-  if (!response.ok) {
-    throw new Error(`Не удалось загрузить платформы: HTTP ${response.status}`)
+  if (signal.aborted) {
+    throw new DOMException('Запрос отменён', 'AbortError')
   }
 
-  const value: unknown = await response.json()
-  return parsePlatforms(value)
+  if (error) {
+    throw new Error(`Не удалось загрузить платформы: ${error.message}`)
+  }
+
+  return parsePlatforms(data)
 }
